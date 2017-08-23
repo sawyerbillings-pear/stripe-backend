@@ -83,17 +83,7 @@ post '/create_charge' do
       :amount => params[:amount], # this number should be in cents
       :currency => "usd",
       :source => params[:source],
-                                   #:description => "Example Charge"
     )
-    
-    #automatically create payout!
-    stripe.payouts.create({
-                          amount: 100,
-                          currency: "usd"
-                          }, function(err, payout) {
-                            return "Error creating charge: #{e.message}"
-                          });
-                       
                        
   rescue Stripe::StripeError => e
     status 402
@@ -127,7 +117,6 @@ post '/stripe-webhook' do
         :currency => source.currency,
         :source => source.id,
         :customer => source.metadata["customer"],
-                                     #:description => "Example Charge"
       )
     rescue Stripe::StripeError => e
       p "Error creating charge: #{e.message}"
