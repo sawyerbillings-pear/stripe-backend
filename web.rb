@@ -85,6 +85,16 @@ post '/create_charge' do
       :source => params[:source],
                                    #:description => "Example Charge"
     )
+    
+    #automatically create payout!
+    stripe.payouts.create({
+                          amount: 100,
+                          currency: "usd"
+                          }, function(err, payout) {
+                            return "Error creating charge: #{e.message}"
+                          });
+                       
+                       
   rescue Stripe::StripeError => e
     status 402
     return "Error creating charge: #{e.message}"
