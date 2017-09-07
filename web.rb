@@ -66,7 +66,11 @@ def authenticate!
     customer_id = session[:customer_id]
     begin
       @customer = Stripe::Customer.retrieve(customer_id)
-    rescue Stripe::InvalidRequestError
+    #rescue Stripe::InvalidRequestError
+      rescue Stripe::StripeError => e
+      status 401
+      return "Error creating customer !!!!"
+    end
     end
   else
     begin
