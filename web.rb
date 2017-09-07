@@ -6,7 +6,6 @@ require 'encrypted_cookie'
 
 Dotenv.load
 Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
-Stripe.api_version = '2017-08-15';
 
 use Rack::Session::EncryptedCookie,
   :secret => 'replace_me_with_a_real_secret_key' # Actually use something secret here!
@@ -21,7 +20,7 @@ post '/ephemeral_keys' do
   begin
     key = Stripe::EphemeralKey.create(
       {customer: @customer.id},
-      # {stripe_version: params[:apiVersion]}
+      {stripe_version: params[:apiVersion]}
     )
   rescue Stripe::StripeError => e
     status 402
