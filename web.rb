@@ -5,7 +5,7 @@ require 'json'
 require 'encrypted_cookie'
 
 Dotenv.load
-Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
+Stripe.api_key = ENV['sk_test_PrdcuoRnxhNQl9V4gz7OgE0e']
 
 use Rack::Session::EncryptedCookie,
   :secret => 'replace_me_with_a_real_secret_key' # Actually use something secret here!
@@ -63,7 +63,10 @@ def authenticate!
     customer_id = session[:customer_id]
     begin
       @customer = Stripe::Customer.retrieve(customer_id)
-    rescue Stripe::InvalidRequestError
+    rescue Stripe::StripeError => e
+      status 401
+      return "Error creating customer !!!!"
+    end
     end
   else
     begin
