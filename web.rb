@@ -6,6 +6,9 @@ require 'encrypted_cookie'
 
 Dotenv.load
 Stripe.api_key = ENV['sk_test_PrdcuoRnxhNQl9V4gz7OgE0e']
+var stripe = require("stripe")(
+  "sk_test_PrdcuoRnxhNQl9V4gz7OgE0e"
+);
 stripe.setApiVersion('2017-08-15');
 
 use Rack::Session::EncryptedCookie,
