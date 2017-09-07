@@ -45,8 +45,9 @@ post '/charge' do
       destination: {
         account: params[:destination],
       },
+      :application_fee => params[:fee],
       :source => source,
-      :description => "Example Charge",
+      :description => "PolarEats Order",
       :shipping => params[:shipping],
     )
   rescue Stripe::StripeError => e
