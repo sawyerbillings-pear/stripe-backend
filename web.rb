@@ -71,7 +71,6 @@ def authenticate!
       status 401
       return "Error creating customer !!!!"
     end
-    end
   else
     begin
       @customer = Stripe::Customer.create(:description => "mobile SDK example customer")
