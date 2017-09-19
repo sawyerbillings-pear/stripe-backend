@@ -43,9 +43,9 @@ post '/charge' do
       :currency => "usd",
       :customer => @customer.id,
       destination: {
+        amount: params[:fee],
         account: params[:destination],
       },
-      :application_fee => params[:fee],
       :source => source,
       :description => "PolarEats Order",
       :shipping => params[:shipping],
