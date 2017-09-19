@@ -35,11 +35,11 @@ post '/charge' do
   authenticate!
   # Get the credit card details submitted by the form
   source = params[:source]
+  @amount = params[:amount] - params[:fee]
 
   # Create the charge on Stripe's servers - this will charge the user's card
   begin
     charge = Stripe::Charge.create(
-      @amount = params[:amount] - params[:fee]
       :amount => params[:amount], # this number should be in cents
       :currency => "usd",
       :customer => @customer.id,
