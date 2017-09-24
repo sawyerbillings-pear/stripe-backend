@@ -47,6 +47,7 @@ post '/charge' do
         account: params[:destination],
       },
       :source => source,
+      :receipt_email => params[:email],
       :description => "PolarEats Order",
       :shipping => params[:shipping],
     )
