@@ -45,7 +45,7 @@ post '/charge' do
                                        :currency => "usd",
                                        :customer => @customer.id,
                                        destination: {
-                                       amount: params[:amount].to_f - (params[:amount].to_f * 0.079 - 30),
+                                       amount: (params[:amount].to_f - (params[:amount].to_f * 0.079 - 30)).to_i,
                                        account: params[:destination],
                                        },
                                        :source => source,
