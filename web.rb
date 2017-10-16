@@ -5,10 +5,14 @@ require 'json'
 require 'encrypted_cookie'
 
 Dotenv.load
+<<<<<<< HEAD
 Stripe.api_key = ENV['sk_test_PrdcuoRnxhNQl9V4gz7OgE0e']
+=======
+Stripe.api_key = ENV['STRIPE_PRODUCTION_SECRET_KEY']
+>>>>>>> 76528be839958a3de2af6115611b0460bfc7c64f
 
 use Rack::Session::EncryptedCookie,
-  :secret => 'replace_me_with_a_real_secret_key' # Actually use something secret here!
+  :secret => ENV['STRIPE_PRODUCTION_SECRET_KEY'] # Actually use something secret here!
 
 get '/' do
   status 200
@@ -35,15 +39,22 @@ post '/charge' do
   authenticate!
   # Get the credit card details submitted by the form
   source = params[:source]
-
+  #@totalPlusTax = params[:amount] + (params[:amount] * 0.08)
+  #@transferAmount = @totalPlusTax - ((@totalPlusTax * 0.079) - 30)
+  
   # Create the charge on Stripe's servers - this will charge the user's card
   begin
     charge = Stripe::Charge.create(
       :amount => params[:amount], # this number should be in cents
       :currency => "usd",
       :customer => @customer.id,
+      destination: {
+        amount: params[:fee],
+        account: params[:destination],
+      },
       :source => source,
-      :description => "Example Charge",
+      :receipt_email => params[:email],
+      :description => "PolarEats Order",
       :shipping => params[:shipping],
     )
   rescue Stripe::StripeError => e
@@ -63,20 +74,21 @@ def authenticate!
     customer_id = session[:customer_id]
     begin
       @customer = Stripe::Customer.retrieve(customer_id)
-    rescue Stripe::StripeError => e
+    #rescue Stripe::InvalidRequestError
+      rescue Stripe::StripeError => e
       status 401
       return "Error creating customer !!!!"
     end
-    end
   else
     begin
-      @customer = Stripe::Customer.create(:description => "mobile SDK example customer")
+      @customer = Stripe::Customer.create(:description => "PolarEats Customer")
     rescue Stripe::InvalidRequestError
     end
     session[:customer_id] = @customer.id
   end
   @customer
 end
+
 
 # This endpoint is used by the Obj-C example app to create a charge.
 post '/create_charge' do
