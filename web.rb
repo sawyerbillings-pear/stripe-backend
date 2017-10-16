@@ -44,7 +44,7 @@ post '/charge' do
                                        :currency => "usd",
                                        :customer => @customer.id,
                                        destination: {
-                                       amount: transfer - 30,
+                                       amount: params[:amount].to_i - transfer - 30,
                                        account: params[:destination],
                                        },
                                        :source => source,
