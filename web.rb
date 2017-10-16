@@ -35,8 +35,6 @@ post '/charge' do
     authenticate!
     # Get the credit card details submitted by the form
     source = params[:source]
-    #@totalPlusTax = params[:amount] + (params[:amount] * 0.08)
-    #@transferAmount = @totalPlusTax - ((@totalPlusTax * 0.079) - 30)
     
     # Create the charge on Stripe's servers - this will charge the user's card
     begin
@@ -45,7 +43,7 @@ post '/charge' do
                                        :currency => "usd",
                                        :customer => @customer.id,
                                        destination: {
-                                       amount: (params[:amount].to_i - (params[:amount].to_f * 0.079 - 30).round),
+                                       amount: params[:amount].to_i - ((params[:amount].to_i * 0.079 - 30).round),
                                        account: params[:destination],
                                        },
                                        :source => source,
