@@ -46,23 +46,22 @@ post '/charge' do
            :receipt_email => params[:email],
            :description => "PolarEats Order",
            :shipping => params[:shipping],
-           :transfer_group => @customer.id,
         })
        
        # Create a Transfer to the organization equal to x percent of the total:
        transfer = Stripe::Transfer.create({
           :amount => params[:org_amount],
           :currency => "usd",
+          :source_transaction => source.id,
           :destination => params[:organization_id],
-          :transfer_group => @customer.id,
       })
                                           
       
       transfer = Stripe::Transfer.create({
          :amount => params[:rest_amount],
          :currency => "usd",
+         :source_transaction => source.id,
          :destination => params[:restaurant_id],
-         :transfer_group => @customer.id,
       })
        rescue Stripe::StripeError => e
        status 402
