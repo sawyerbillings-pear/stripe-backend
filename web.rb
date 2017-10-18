@@ -52,7 +52,7 @@ post '/charge' do
        transfer = Stripe::Transfer.create({
           :amount => params[:org_amount],
           :currency => "usd",
-          :source_transaction => source.id,
+          :source_transaction => params[:id],
           :destination => params[:organization_id],
       })
                                           
@@ -60,7 +60,7 @@ post '/charge' do
       transfer = Stripe::Transfer.create({
          :amount => params[:rest_amount],
          :currency => "usd",
-         :source_transaction => source.id,
+         :source_transaction => params[:id],
          :destination => params[:restaurant_id],
       })
        rescue Stripe::StripeError => e
