@@ -36,7 +36,6 @@ post '/charge' do
     # Get the credit card details submitted by the form
     source = params[:source]
 
-
     # Create the charge on Stripe's servers - this will charge the user's card
     begin
         charge = Stripe::Charge.create({
@@ -51,7 +50,7 @@ post '/charge' do
        
        # Create a Transfer to the organization equal to x percent of the total:
        transfer = Stripe::Transfer.create({
-          :amount => 7000,
+          :amount => params[:org_amount],
           :currency => "usd",
           :destination => params[:organization_id],
           :transfer_group => @customer.id,
@@ -59,7 +58,7 @@ post '/charge' do
                                           
       
       transfer = Stripe::Transfer.create({
-         :amount => 2000,
+         :amount => params[:rest_amount],
          :currency => "usd",
          :destination => params[:restaurant_id],
          :transfer_group => @customer.id,
