@@ -46,6 +46,7 @@ post '/charge' do
            :receipt_email => params[:email],
            :description => "PolarEats Order",
            :shipping => params[:shipping],
+           :transfer_group => @customer.id,
         })
        
        # Create a Transfer to the organization equal to x percent of the total:
