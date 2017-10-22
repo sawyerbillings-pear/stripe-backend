@@ -38,36 +38,55 @@ post '/charge' do
 
     # Create the charge on Stripe's servers - this will charge the user's card
     begin
-        charge = Stripe::Charge.create({
-           :amount => params[:amount], # this number should be in cents
-           :currency => "usd",
-           :customer => @customer.id,
-           :source => source,
-           :receipt_email => params[:email],
-           :description => "PolarEats Order",
-           :shipping => params[:shipping],
-        })
-       
-       # Create a Transfer to the organization equal to x percent of the total:
-       transfer = Stripe::Transfer.create({
-          :amount => params[:org_amount],
-          :currency => "usd",
-          :source_transaction => params[:id],
-          :destination => params[:organization_id],
-      })
-                                          
-      
-      transfer = Stripe::Transfer.create({
-         :amount => params[:rest_amount],
-         :currency => "usd",
-         :source_transaction => params[:id],
-         :destination => params[:restaurant_id],
-      })
-       rescue Stripe::StripeError => e
-       status 402
-       return "Error creating charge: #{e.message}"
-    end
-    
+        #temporary charge execution until below code works
+        charge = Stripe::Charge.create(
+                                       :amount => params[:amount], # this number should be in cents
+                                       :currency => "usd",
+                                       :customer => @customer.id,
+                                       destination: {
+                                       amount: params[:rest_amount],
+                                       account: params[:restaurant_id],
+                                       },
+                                       :source => source,
+                                       :receipt_email => params[:email],
+                                       :description => "PolarEats Order",
+                                       :shipping => params[:shipping],
+                                       )
+                                       rescue Stripe::StripeError => e
+                                       status 402
+                                       return "Error creating charge: #{e.message}"
+        end
+        
+#        charge = Stripe::Charge.create({
+#           :amount => params[:amount], # this number should be in cents
+#           :currency => "usd",
+#           :customer => @customer.id,
+#           :source => source,
+#           :receipt_email => params[:email],
+#           :description => "PolarEats Order",
+#           :shipping => params[:shipping],
+#        })
+#
+#       # Create a Transfer to the organization equal to x percent of the total:
+#       transfer = Stripe::Transfer.create({
+#          :amount => params[:org_amount],
+#          :currency => "usd",
+#          :source_transaction => params[:id],
+#          :destination => params[:organization_id],
+#      })
+#
+#
+#      transfer = Stripe::Transfer.create({
+#         :amount => params[:rest_amount],
+#         :currency => "usd",
+#         :source_transaction => params[:id],
+#         :destination => params[:restaurant_id],
+#      })
+#       rescue Stripe::StripeError => e
+#       status 402
+#       return "Error creating charge: #{e.message}"
+#    end
+
     status 200
     return "Charge successfully created"
 end
