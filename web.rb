@@ -18,9 +18,8 @@ end
 post '/ephemeral_keys' do
   authenticate!
   begin
-    puts "making key: " + params["customer_id"]
     key = Stripe::EphemeralKey.create(
-      {customer: params["customer_id"]},
+      {customer: @customer.id},
       {stripe_version: params["api_version"]}
     )
   rescue Stripe::StripeError => e
