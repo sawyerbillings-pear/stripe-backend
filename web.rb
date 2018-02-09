@@ -16,7 +16,6 @@ get '/' do
 end
 
 post '/ephemeral_keys' do
-  print params["customer_id"]
   authenticate!
   begin
     key = Stripe::EphemeralKey.create(
