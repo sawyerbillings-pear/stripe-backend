@@ -97,6 +97,8 @@ def authenticate!
     # Your own logic will likely look very different.
     return @customer if @customer
     if session.has_key?(:customer_id)
+        print "hit session!"
+        print params["customer_id"]
         customer_id = session[:customer_id]
         begin
             @customer = Stripe::Customer.retrieve(customer_id)
