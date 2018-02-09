@@ -16,7 +16,6 @@ get '/' do
 end
 
 post '/ephemeral_keys' do
-    print params["customer_id"]
     authenticate!
     begin
         key = Stripe::EphemeralKey.create(
@@ -96,28 +95,8 @@ def authenticate!
     # This code simulates "loading the Stripe customer for your current session".
     # Your own logic will likely look very different.
     
-    if params["customer_id"] != "0"
-        customer_id = params[:customer_id]
-        begin
-            @customer = Stripe::Customer.retrieve(customer_id)
-            #rescue Stripe::InvalidRequestError
-            rescue Stripe::StripeError => e
-            status 401
-            return "Error creating customer !!!!"
-        end
-    else
-        begin
-            @customer = Stripe::Customer.create(:description => "Nibble Customer")
-            rescue Stripe::InvalidRequestError
-        end
-        session[:customer_id] = @customer.id
-    end
-    @customer
-#     return @customer if @customer
-#     if session.has_key?(:customer_id)
-#         print "hit session!"
-#         print params["customer_id"]
-#         customer_id = session[:customer_id]
+#     if params["customer_id"] != "0"
+#         customer_id = params[:customer_id]
 #         begin
 #             @customer = Stripe::Customer.retrieve(customer_id)
 #             #rescue Stripe::InvalidRequestError
@@ -125,14 +104,34 @@ def authenticate!
 #             status 401
 #             return "Error creating customer !!!!"
 #         end
-#         else
+#     else
 #         begin
 #             @customer = Stripe::Customer.create(:description => "Nibble Customer")
 #             rescue Stripe::InvalidRequestError
 #         end
 #         session[:customer_id] = @customer.id
 #     end
-    #@customer
+#     @customer
+    return @customer if @customer
+    if session.has_key?(:customer_id)
+        print "hit session!"
+        print params["customer_id"]
+        customer_id = session[:customer_id]
+        begin
+            @customer = Stripe::Customer.retrieve(customer_id)
+            #rescue Stripe::InvalidRequestError
+            rescue Stripe::StripeError => e
+            status 401
+            return "Error creating customer !!!!"
+        end
+        else
+        begin
+            @customer = Stripe::Customer.create(:description => "Nibble Customer")
+            rescue Stripe::InvalidRequestError
+        end
+        session[:customer_id] = @customer.id
+    end
+    @customer
 end
 
 # This endpoint is used by the Obj-C example app to create a charge.
