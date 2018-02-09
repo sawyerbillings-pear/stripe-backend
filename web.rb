@@ -20,7 +20,7 @@ post '/ephemeral_keys' do
     puts "making key: " + params["customer_id"]
     begin
         key = Stripe::EphemeralKey.create(
-          {customer: params["customer_id"]},
+          {customer: @customer.id},
           {stripe_version: params["api_version"]}
           )
           rescue Stripe::StripeError => e
