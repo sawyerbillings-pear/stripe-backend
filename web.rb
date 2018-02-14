@@ -20,21 +20,40 @@ post '/charge' do
     payload = indifferent_params(JSON.parse(request.body.read))
   end
 
-  begin
-    #6
-    charge = Stripe::Charge.create(
-      :amount => payload[:amount],
-      :currency => payload[:currency],
-      :source => payload[:token],
-      :description => payload[:description]
-    )
-    #7
-    rescue Stripe::StripeError => e
-    status 402
-    return "Error creating charge: #{e.message}"
-  end
-  #8
+  if payload[:customer] != 'nil'
+    #we have an existing customer!
+    begin
+      customer = Stripe::Customer.retrieve(payload[:customer])
+      charge = Stripe::Charge.create(
+        :amount => payload[:amount], # $15.00 this time
+        :currency => payload[:currency],
+        :customer => customer_id, # Previously stored, then retrieved
+      )
+      rescue Stripe::StripeError => e
+      status 402
+      return "Error creating charge: #{e.message}"
+    end
+  else
+    begin
+    # Create a Customer:
+      customer = Stripe::Customer.create(
+        :email => "paying.user@example.com",
+        :source => token,
+      )
+      #write stripe customer to firebase!!!!!!!!
+
+      charge = Stripe::Charge.create(
+        :amount => payload[:amount],
+        :currency => payload[:currency],
+        :source => payload[:token],
+        :description => payload[:description]
+      )
+
+      rescue Stripe::StripeError => e
+      status 402
+      return "Error creating charge: #{e.message}"
+    end
+
   status 200
   return "Charge successfully created"
-
 end
