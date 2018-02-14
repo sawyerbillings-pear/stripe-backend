@@ -4,7 +4,7 @@ require 'stripe'
 require 'json'
 
 #2
-Stripe.api_key = 'sk_test_FJTJJAuysB52e6To02Wd1dmD'
+Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
 
 #3
 get '/' do
