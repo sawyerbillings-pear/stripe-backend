@@ -53,6 +53,7 @@ post '/charge' do
       status 402
       return "Error creating charge: #{e.message}"
     end
+  end
 
   status 200
   return "Charge successfully created"
