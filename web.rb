@@ -2,10 +2,14 @@
 require 'sinatra'
 require 'stripe'
 require 'json'
+require 'Firebase'
 
 #2
-Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
+Stripe.api_key = 'sk_test_FJTJJAuysB52e6To02Wd1dmD' #ENV['STRIPE_TEST_SECRET_KEY']
 
+base_uri = 'https://nibble-c00f6.firebaseio.com'
+
+firebase = Firebase::Client.new(base_uri)
 #3
 get '/' do
   status 200
@@ -20,14 +24,14 @@ post '/charge' do
     payload = indifferent_params(JSON.parse(request.body.read))
   end
 
-  if payload[:customer] != 'nil'
+  if payload[:customer] != '0'
     #we have an existing customer!
     begin
       customer = Stripe::Customer.retrieve(payload[:customer])
       charge = Stripe::Charge.create(
-        :amount => payload[:amount], # $15.00 this time
+        :amount => payload[:amount],
         :currency => payload[:currency],
-        :customer => customer_id, # Previously stored, then retrieved
+        :customer => customer, 
       )
       rescue Stripe::StripeError => e
       status 402
@@ -35,19 +39,27 @@ post '/charge' do
     end
   else
     begin
-    # Create a Customer:
+      token = params[:token]
+
+      # Create a Customer:
       customer = Stripe::Customer.create(
-        :email => "paying.user@example.com",
+        :email => params[:email],
         :source => token,
       )
-      #write stripe customer to firebase!!!!!!!!
 
+      # Charge the Customer instead of the card:
       charge = Stripe::Charge.create(
-        :amount => payload[:amount],
-        :currency => payload[:currency],
-        :source => payload[:token],
-        :description => payload[:description]
+        :amount => 1000,
+        :currency => "usd",
+        :customer => customer.id,
       )
+
+      id = params[:userID]
+      puts id
+      #firebase.update({"Users/#{id}" => customer.id })
+      firebase.update('Users', {
+          "#{id}" => customer.id
+          })
 
       rescue Stripe::StripeError => e
       status 402
