@@ -2,7 +2,7 @@
 require 'sinatra'
 require 'stripe'
 require 'json'
-require 'Firebase'
+require 'firebase'
 
 #2
 Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY'] #'sk_test_FJTJJAuysB52e6To02Wd1dmD' #
