@@ -5,7 +5,7 @@ require 'json'
 require 'firebase'
 
 #2
-Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY'] #'sk_test_FJTJJAuysB52e6To02Wd1dmD' #
+Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
 
 base_uri = 'https://nibble-c00f6.firebaseio.com'
 
@@ -14,6 +14,16 @@ firebase = Firebase::Client.new(base_uri)
 get '/' do
   status 200
   return "Nibble backend setup correctly"
+end
+
+get '/retrieve_cards' do
+  payload = params
+  if request.content_type.include? 'application/json' and params.empty?
+    payload = indifferent_params(JSON.parse(request.body.read))
+  end
+
+  card = Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card")
+  return card
 end
 
 #4
