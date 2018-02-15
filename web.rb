@@ -5,7 +5,7 @@ require 'json'
 require 'Firebase'
 
 #2
-Stripe.api_key = 'sk_test_FJTJJAuysB52e6To02Wd1dmD' #ENV['STRIPE_TEST_SECRET_KEY']
+Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY'] #'sk_test_FJTJJAuysB52e6To02Wd1dmD' #
 
 base_uri = 'https://nibble-c00f6.firebaseio.com'
 
@@ -31,7 +31,7 @@ post '/charge' do
       charge = Stripe::Charge.create(
         :amount => payload[:amount],
         :currency => payload[:currency],
-        :customer => customer, 
+        :customer => customer,
       )
       rescue Stripe::StripeError => e
       status 402
