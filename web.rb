@@ -23,7 +23,7 @@ get '/retrieve_cards' do
   # end
   if payload[:customer] != ""
     status 200
-    result = JSON.parse(Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card"))
+    result = Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card")[:data]
     return result
   else
     card = "no customer"
