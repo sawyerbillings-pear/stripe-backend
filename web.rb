@@ -21,8 +21,9 @@ get '/retrieve_cards' do
   # if request.content_type.include? 'application/json' and params.empty?
   #   payload = indifferent_params(JSON.parse(request.body.read))
   # end
-  if payload[:customer] != nil
-    card = Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card")
+  if payload[:customer] != ""
+    status 200
+    return Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card")
   else
     card = "no customer"
   end
