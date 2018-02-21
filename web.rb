@@ -23,6 +23,7 @@ get '/retrieve_cards' do
   end
 
   card = Stripe::Customer.retrieve(payload[:customer]).sources.all(:limit => 3, :object => "card")
+  puts card
   return card
 end
 
