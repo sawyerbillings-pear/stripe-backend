@@ -46,12 +46,12 @@ post '/charge' do
     begin
       customer = Stripe::Customer.retrieve(payload[:customer])
 
-      charge = Stripe::Charge.create(
+      charge = Stripe::Charge.create({
         :amount => payload[:amount],
         :currency => payload[:currency],
         :customer => customer,
         :transfer_group => payload["transfer"],
-      )
+      })
 
       # Create a Transfer to a connected account (later):
       transfer = Stripe::Transfer.create({
@@ -78,17 +78,17 @@ post '/charge' do
       token = params[:token]
 
       # Create a Customer:
-      customer = Stripe::Customer.create(
+      customer = Stripe::Customer.create({
         :email => params[:email],
         :source => token,
-      )
+      })
 
-      charge = Stripe::Charge.create(
+      charge = Stripe::Charge.create({
         :amount => payload[:amount],
         :currency => payload[:currency],
         :customer => customer,
         :transfer_group => payload["transfer"],
-      )
+      })
 
       # Create a Transfer to a connected account (later):
       transfer = Stripe::Transfer.create({
