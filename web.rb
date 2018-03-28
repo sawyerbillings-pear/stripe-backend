@@ -5,7 +5,7 @@ require 'json'
 require 'firebase'
 
 #2
-Stripe.api_key = ENV['STRIPE_LIVE_SECRET']
+Stripe.api_key = ENV['STRIPE_TEST_SECRET_KEY']
 
 base_uri = 'https://nibble-c00f6.firebaseio.com'
 
