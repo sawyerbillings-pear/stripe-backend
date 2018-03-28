@@ -49,6 +49,10 @@ post '/charge' do
         :amount => payload[:amount],
         :currency => payload[:currency],
         :customer => customer,
+        :destination => {
+          amount: payload[:donation_amount],
+          account: payload[:destination],
+        },
       )
       rescue Stripe::StripeError => e
       status 402
@@ -66,9 +70,13 @@ post '/charge' do
 
       # Charge the Customer instead of the card:
       charge = Stripe::Charge.create(
-        :amount => 1000,
+        :amount => payload[:amount],
         :currency => "usd",
         :customer => customer.id,
+        :destination => {
+          amount: payload[:donation_amount],
+          account: payload[:destination],
+        },
       )
 
       id = params[:userID]
