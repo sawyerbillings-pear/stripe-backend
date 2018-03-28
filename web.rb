@@ -41,15 +41,34 @@ post '/charge' do
     payload = indifferent_params(JSON.parse(request.body.read))
   end
 
-  if payload[:customer] != '0'
+  if payload[:customer] != ""
     #we have an existing customer!
     begin
       customer = Stripe::Customer.retrieve(payload[:customer])
-      charge = Stripe::Charge.create(
+
+      charge = Stripe::Charge.create({
         :amount => payload[:amount],
         :currency => payload[:currency],
         :customer => customer,
-      )
+        :transfer_group => payload["transfer"],
+      })
+
+      # Create a Transfer to a connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["donation_amount"],
+        :currency => "usd",
+        :destination => payload["org_stripe"],
+        :transfer_group => payload["transfer"],
+      })
+
+      # Create a second Transfer to another connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["restaurant_amount"],
+        :currency => "usd",
+        :destination => payload["rest_stripe"],
+        :transfer_group => payload["transfer"],
+      })
+
       rescue Stripe::StripeError => e
       status 402
       return "Error creating charge: #{e.message}"
@@ -59,17 +78,33 @@ post '/charge' do
       token = params[:token]
 
       # Create a Customer:
-      customer = Stripe::Customer.create(
+      customer = Stripe::Customer.create({
         :email => params[:email],
         :source => token,
-      )
+      })
 
-      # Charge the Customer instead of the card:
-      charge = Stripe::Charge.create(
-        :amount => 1000,
+      charge = Stripe::Charge.create({
+        :amount => payload[:amount],
+        :currency => payload[:currency],
+        :customer => customer,
+        :transfer_group => payload["transfer"],
+      })
+
+      # Create a Transfer to a connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["donation_amount"],
         :currency => "usd",
-        :customer => customer.id,
-      )
+        :destination => payload["org_stripe"],
+        :transfer_group => payload["transfer"],
+      })
+
+      # Create a second Transfer to another connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["restaurant_amount"],
+        :currency => "usd",
+        :destination => payload["rest_stripe"],
+        :transfer_group => payload["transfer"],
+      })
 
       id = params[:userID]
       puts id
