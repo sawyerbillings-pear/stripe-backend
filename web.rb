@@ -44,6 +44,7 @@ post '/charge' do
   if payload[:customer] != '0'
     #we have an existing customer!
     begin
+      source = customer
       customer = Stripe::Customer.retrieve(payload[:customer])
       charge = Stripe::Charge.create(
         :amount => payload[:amount],
@@ -53,6 +54,7 @@ post '/charge' do
           amount: payload[:donation_amount],
           account: payload[:destination],
         },
+        :source => customer,
       )
       rescue Stripe::StripeError => e
       status 402
@@ -77,6 +79,7 @@ post '/charge' do
           amount: payload[:donation_amount],
           account: payload[:destination],
         },
+        :source => customer,
       )
 
       id = params[:userID]
