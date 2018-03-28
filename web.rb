@@ -44,7 +44,6 @@ post '/charge' do
   if payload[:customer] != '0'
     #we have an existing customer!
     begin
-      source = customer
       customer = Stripe::Customer.retrieve(payload[:customer])
 
       charge = Stripe::Charge.create(
