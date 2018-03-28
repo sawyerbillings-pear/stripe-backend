@@ -69,7 +69,6 @@ post '/charge' do
         :transfer_group => payload["transfer"],
       })
 
-
       rescue Stripe::StripeError => e
       status 402
       return "Error creating charge: #{e.message}"
@@ -84,17 +83,28 @@ post '/charge' do
         :source => token,
       )
 
-      # Charge the Customer instead of the card:
       charge = Stripe::Charge.create(
         :amount => payload[:amount],
-        :currency => "usd",
-        :customer => customer.id,
-        :destination => {
-          amount: payload[:donation_amount],
-          account: payload[:destination],
-        },
-        :source => customer,
+        :currency => payload[:currency],
+        :customer => customer,
+        :transfer_group => payload["transfer"],
       )
+
+      # Create a Transfer to a connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["donation_amount"],
+        :currency => "usd",
+        :destination => payload["org_stripe"],
+        :transfer_group => payload["transfer"],
+      })
+
+      # Create a second Transfer to another connected account (later):
+      transfer = Stripe::Transfer.create({
+        :amount => payload["restaurant_amount"],
+        :currency => "usd",
+        :destination => payload["rest_stripe"],
+        :transfer_group => payload["transfer"],
+      })
 
       id = params[:userID]
       puts id
