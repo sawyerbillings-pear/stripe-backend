@@ -41,7 +41,7 @@ post '/charge' do
     payload = indifferent_params(JSON.parse(request.body.read))
   end
 
-  if payload[:customer] != ""
+  if payload[:customer] != 0
     #we have an existing customer!
     begin
       customer = Stripe::Customer.retrieve(payload[:customer])
